@@ -9,6 +9,7 @@ enum _ini_reader_error_code
    , E_INI_READER_DUPLICATE_PROPERTY = -12
    , E_INI_READER_SECTION_NOT_FOUND = -21
    , E_INI_READER_PROPERTY_NOT_FOUND = -22
+   , E_INI_READER_UNKNOWN = -200
 };
 
 typedef enum _ini_reader_error_code ini_reader_error_code;

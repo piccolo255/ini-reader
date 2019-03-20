@@ -10,6 +10,21 @@
    #define INI_READER_STRLEN  256
 #endif
 
+// general descriptions of error states
+struct _error_descriptions{
+   int         code;
+   const char *message;
+} error_descriptions[] =
+   { { E_INI_READER_UNKNOWN, "unknown error" }
+   , { E_INI_READER_SUCCESS, "no error" }
+   , { E_INI_READER_FILE_NOT_FOUND, "unable to open file" }
+   , { E_INI_READER_PARSE_FAIL, "unable to parse config file" }
+   , { E_INI_READER_DUPLICATE_SECTION, "there are multiple sections with identical names" }
+   , { E_INI_READER_DUPLICATE_PROPERTY, "there are multiple properties with identical names in this section" }
+   , { E_INI_READER_SECTION_NOT_FOUND, "no such section" }
+   , { E_INI_READER_PROPERTY_NOT_FOUND, "no such property in this saction" }
+};
+
 // linked list to store config file properties
 typedef struct _t_ini_reader_property * t_ini_reader_property;
 struct _t_ini_reader_property {
@@ -407,10 +422,14 @@ double ini_reader_get_double
 const char *ini_reader_get_error_description
    ( ini_reader_error_code error_code
 ){
-   // TODO
-   printf( "ini_reader_get_error_description: not implemented!" );
-   exit( EXIT_FAILURE );
-   return NULL;
+   size_t count = sizeof( error_descriptions )/sizeof(struct _error_descriptions);
+   for( size_t i = 0; i < count; i++ ){
+      if( error_descriptions[i].code == error_code ){
+         return error_descriptions[i].message;
+      }
+   }
+   // description for given error code not found, return unknown error
+   return error_descriptions[0].message;
 }
 
 ini_reader_error_code ini_reader_get_last_error_code
@@ -422,10 +441,7 @@ ini_reader_error_code ini_reader_get_last_error_code
 const char *ini_reader_get_last_error_description
    ( ini_reader_data ini_data
 ){
-   // TODO
-   printf( "ini_reader_get_last_error_description: not implemented!" );
-   exit( EXIT_FAILURE );
-   return NULL;
+   return ini_reader_get_error_description( ini_data->last_error_code );
 }
 
 const char *ini_reader_get_last_error_details
