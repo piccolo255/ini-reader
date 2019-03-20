@@ -39,12 +39,14 @@ void add_section( ini_reader_data    parent
 t_ini_reader_section get_section( ini_reader_data   parent
                                 , const char         *key );
 t_ini_reader_section new_section( const char *key );
+void clear_sections( ini_reader_data parent );
 void add_property( t_ini_reader_section   parent
                  , t_ini_reader_property  new );
 t_ini_reader_property get_property( t_ini_reader_section  parent
                            , const char           *key );
 t_ini_reader_property new_property( const char *key
                            , const char *value );
+void clear_properties( t_ini_reader_section parent );
 
 // utility functions
 void strncpy_fixed( char        *dest
@@ -147,6 +149,20 @@ t_ini_reader_section get_section
    return s;
 }
 
+void clear_sections
+   ( ini_reader_data parent
+){
+   t_ini_reader_section s = parent->head_section;
+   t_ini_reader_section next;
+   while( s ){
+      clear_properties( s );
+      next = s->next;
+      free( s );
+      s = next;
+   }
+   parent->head_section = NULL;
+}
+
 t_ini_reader_property new_property
    ( const char *key
    , const char *value
@@ -182,6 +198,19 @@ t_ini_reader_property get_property
    }
 
    return p;
+}
+
+void clear_properties
+   ( t_ini_reader_section parent
+){
+   t_ini_reader_property p = parent->properties;
+   t_ini_reader_property next;
+   while( p ){
+      next = p->next;
+      free( p );
+      p = next;
+   }
+   parent->properties = NULL;
 }
 
 ini_reader_data ini_reader_parse
@@ -278,7 +307,8 @@ ini_reader_data ini_reader_parse
 void ini_reader_free
   ( ini_reader_data ini_data
 ){
-  // TODO
+   clear_sections( ini_data );
+   free( ini_data );
 }
 
 const char *ini_reader_get_basic
