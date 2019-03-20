@@ -139,87 +139,111 @@ int main( void ){
       exit( EXIT_FAILURE );
    }
 
-//   // read values
-//
-//   test_int( __LINE__
-//           , "read integer"
-//           , ini_reader_get_int( ini, "types", "integer value", -1 )
-//           , 42 );
-//
-//   test_double( __LINE__
-//              , "read double"
-//              , ini_reader_get_double( ini, "types", "double value", -1.0 )
-//              , 3.14 );
+   // read values
+
+   test_int( __LINE__
+           , "read integer"
+           , ini_reader_get_int( ini, "types", "integer value", -1 )
+           , 42 );
+   test_int( __LINE__
+           , "read integer, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_SUCCESS );
+
+   test_double( __LINE__
+              , "read double"
+              , ini_reader_get_double( ini, "types", "double value", -1.0 )
+              , 3.14 );
+   test_int( __LINE__
+           , "read double, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_SUCCESS );
 
    test_string( __LINE__
               , "read string"
               , ini_reader_get_string( ini, "types", "string value", "break" )
               , "accelerate" );
+   test_int( __LINE__
+           , "read string, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_SUCCESS );
 
-//   // section & key presence
-//
-//   test_int( __LINE__
-//           , "read from missing key"
-//           , ini_reader_get_int( ini, "section", "missing key", -1 )
-//           , -1 );
-//
-//   test_int( __LINE__
-//           , "read from missing section"
-//           , ini_reader_get_int( ini, "missing section", "key in missing section", -1 )
-//           , -1 );
-//
-//   test_int( __LINE__
-//           , "read from key in named section"
-//           , ini_reader_get_int( ini, "section", "key in named section", -1 )
-//           , 255 );
-//
-//   test_int( __LINE__
-//           , "read from key in global section"
-//           , ini_reader_get_int( ini, "", "key in global section", -1 )
-//           , -255 );
-//
-//   // whitespace
-//
-//   test_int( __LINE__
-//           , "key, left whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "key left", -1 )
-//           , 8 );
-//
-//   test_int( __LINE__
-//           , "key, right whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "key right", -1 )
-//           , 9 );
-//
-//   test_int( __LINE__
-//           , "key, left and right whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "key both", -1 )
-//           , 10 );
-//
-//   test_int( __LINE__
-//           , "value, left whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "value left", -1 )
-//           , 11 );
-//
-//   test_int( __LINE__
-//           , "value, right whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "value right", -1 )
-//           , 12 );
-//
-//   test_int( __LINE__
-//           , "value, left and right whitespace"
-//           , ini_reader_get_int( ini, "whitespace", "value both", -1 )
-//           , 13 );
-//
-//   test_string( __LINE__
-//              , "empty key"
-//              , ini_reader_get_string( ini, "whitespace", "", "skipped" )
-//              , "skipped" );
-//
-//   test_string( __LINE__
-//              , "empty string value"
-//              , ini_reader_get_string( ini, "whitespace", "empty string", "aaa" )
-//              , "" );
-//
+   // section & key presence
+
+   test_int( __LINE__
+           , "read missing property"
+           , ini_reader_get_int( ini, "section", "missing key", -1 )
+           , -1 );
+   test_int( __LINE__
+           , "read missing property, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_PROPERTY_NOT_FOUND );
+
+   test_int( __LINE__
+           , "read from missing section"
+           , ini_reader_get_int( ini, "missing section", "key in missing section", -1 )
+           , -1 );
+   test_int( __LINE__
+           , "read from missing section, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_SECTION_NOT_FOUND);
+
+   test_int( __LINE__
+           , "read property in named section"
+           , ini_reader_get_int( ini, "section", "key in named section", -1 )
+           , 255 );
+   test_int( __LINE__
+           , "read missing property, error code"
+           , (int)ini_reader_get_last_error_code( ini )
+           , (int)E_INI_READER_SUCCESS );
+
+   test_int( __LINE__
+           , "read from key in global section"
+           , ini_reader_get_int( ini, "", "key in global section", -1 )
+           , -255 );
+
+   // whitespace
+
+   test_int( __LINE__
+           , "key, left whitespace"
+           , ini_reader_get_int( ini, "whitespace", "key left", -1 )
+           , 8 );
+
+   test_int( __LINE__
+           , "key, right whitespace"
+           , ini_reader_get_int( ini, "whitespace", "key right", -1 )
+           , 9 );
+
+   test_int( __LINE__
+           , "key, left and right whitespace"
+           , ini_reader_get_int( ini, "whitespace", "key both", -1 )
+           , 10 );
+
+   test_int( __LINE__
+           , "value, left whitespace"
+           , ini_reader_get_int( ini, "whitespace", "value left", -1 )
+           , 11 );
+
+   test_int( __LINE__
+           , "value, right whitespace"
+           , ini_reader_get_int( ini, "whitespace", "value right", -1 )
+           , 12 );
+
+   test_int( __LINE__
+           , "value, left and right whitespace"
+           , ini_reader_get_int( ini, "whitespace", "value both", -1 )
+           , 13 );
+
+   test_string( __LINE__
+              , "empty key"
+              , ini_reader_get_string( ini, "whitespace", "", "skipped" )
+              , "skipped" );
+
+   test_string( __LINE__
+              , "empty string value"
+              , ini_reader_get_string( ini, "whitespace", "empty string", "aaa" )
+              , "" );
+
    ini_reader_free( &ini );
 
    err = ini_reader_parse( &ini, test_file_repeat );
@@ -230,7 +254,6 @@ int main( void ){
            , (int)E_INI_READER_DUPLICATE_SECTION );
 
    ini_reader_free( &ini );
-
 
    return 0;
 }

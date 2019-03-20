@@ -54,6 +54,8 @@ void trim_edge_whitespace( char *str );
 void set_last_error( ini_reader_data         ini_data
                    , ini_reader_error_code   errcode
                    , const char             *message );
+void append_last_error( ini_reader_data   ini_data
+                       , const char      *message );
 
 // basic getter
 const char *ini_reader_get_basic( ini_reader_data  ini_data
@@ -99,6 +101,14 @@ void set_last_error
 ){
    ini_data->last_error_code = errcode;
    strncpy_fixed( ini_data->last_error_details, message, INI_READER_STRLEN );
+}
+
+void append_last_error
+   ( ini_reader_data    ini_data
+   , const char        *message
+){
+   int len = strlen( ini_data->last_error_details );
+   strncpy_fixed( ini_data->last_error_details+len, message, INI_READER_STRLEN-len );
 }
 
 t_ini_reader_section new_section
@@ -301,68 +311,72 @@ const char *ini_reader_get_basic
    }
 
    // property found, return value
+   set_last_error( ini_data, E_INI_READER_SUCCESS, "" );
    return p->value;
 }
 
 const char *ini_reader_get_string
-   ( ini_reader_data  ini_data
+   ( ini_reader_data    ini_data
    , const char        *section
    , const char        *key
    , char              *default_value
 ){
    const char *val_str;
+   char error_message[INI_READER_STRLEN];
 
    // locate property, return default value if not found
    val_str = ini_reader_get_basic( ini_data, section, key );
    if( !val_str ){
-      printf( "Config: section [%s], key %s not found: assuming %s = %s\n",
-              section, key, key, default_value );
+      snprintf( error_message, INI_READER_STRLEN, ": assuming [%s] %s = %s", section, key, default_value );
+      append_last_error( ini_data, error_message );
       return default_value;
    }
 
    // property found, return value
    return val_str;
 }
-//
-//int ini_reader_get_int
-//   ( ini_reader_data  ini_data
-//   , const char        *section
-//   , const char        *key
-//   , int                default_value
-//){
-//   char *val_str;
-//
-//   // locate property, return default value if not found
-//   val_str = ini_reader_get_basic( ini_data, section, key );
-//   if( !val_str ){
-//      printf( "Config: section [%s], key %s not found: assuming %s = %d\n",
-//              section, key, key, default_value );
-//      return default_value;
-//   }
-//
-//   // property found, return value
-//   return atoi( val_str );
-//}
-//
-//double ini_reader_get_double
-//   ( ini_reader_data  ini_data
-//   , const char        *section
-//   , const char        *key
-//   , double             default_value
-//){
-//   char *val_str;
-//
-//   // locate property, return default value if not found
-//   val_str = ini_reader_get_basic( ini_data, section, key );
-//   if( !val_str ){
-//      printf( "Config: section [%s], key %s not found: assuming %s = %f\n",
-//              section, key, key, default_value );
-//      return default_value;
-//   }
-//
-//   // property found, return value
-//   return atof( val_str );
-//}
+
+int ini_reader_get_int
+   ( ini_reader_data    ini_data
+   , const char        *section
+   , const char        *key
+   , int                default_value
+){
+   const char *val_str;
+   char error_message[INI_READER_STRLEN];
+
+   // locate property, return default value if not found
+   val_str = ini_reader_get_basic( ini_data, section, key );
+   if( !val_str ){
+      snprintf( error_message, INI_READER_STRLEN, ": assuming [%s] %s = %d", section, key, default_value );
+      append_last_error( ini_data, error_message );
+      return default_value;
+   }
+
+   // property found, return value
+   return atoi( val_str );
+}
+
+double ini_reader_get_double
+   ( ini_reader_data    ini_data
+   , const char        *section
+   , const char        *key
+   , double             default_value
+){
+   const char *val_str;
+   char error_message[INI_READER_STRLEN];
+
+   // locate property, return default value if not found
+   val_str = ini_reader_get_basic( ini_data, section, key );
+   if( !val_str ){
+      snprintf( error_message, INI_READER_STRLEN, ": assuming [%s] %s = %lf", section, key, default_value );
+      append_last_error( ini_data, error_message );
+      return default_value;
+   }
+
+   // property found, return value
+   return atof( val_str );
+}
 
 const char *ini_reader_get_error_description
    ( ini_reader_error_code error_code

@@ -20,19 +20,19 @@ typedef struct _ini_reader_data * ini_reader_data;
 ini_reader_error_code ini_reader_parse( ini_reader_data *ini_data
                                       , const char      *filename );
 
-//// getters for config data
+// getters for config data
 const char *ini_reader_get_string( ini_reader_data    ini_data
                                  , const char        *section
                                  , const char        *key
                                  , char              *default_value );
-//int ini_reader_get_int( t_ini_reader_data ini_data
-//                      , const char       *section
-//                      , const char       *key
-//                      , int               default_value );
-//double ini_reader_get_double( t_ini_reader_data ini_data
-//                            , const char       *section
-//                            , const char       *key
-//                            , double            default_value );
+int ini_reader_get_int( ini_reader_data   ini_data
+                      , const char       *section
+                      , const char       *key
+                      , int               default_value );
+double ini_reader_get_double( ini_reader_data   ini_data
+                            , const char       *section
+                            , const char       *key
+                            , double            default_value );
 
 // bookkeeping
 void ini_reader_free( ini_reader_data *ini_data );
