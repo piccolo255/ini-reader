@@ -73,8 +73,10 @@ int main( void ){
    const char *test_file = "test.ini";
    const char *test_file_repeat = "test_repeat.ini";
    const char *test_file_missing = "test_non_existent.ini";
+   ini_reader_data ini;
+   FILE *fp;
    
-   FILE *fp = fopen( test_file, "w" );
+   fp = fopen( test_file, "w" );
    if( fp == NULL ){
       fprintf( stderr, "Error opening config file." );
       exit( EXIT_FAILURE );
@@ -109,32 +111,24 @@ int main( void ){
    fprintf( fp, "[repeat section]\n" );
    fprintf( fp, "[repeat section]\n" );
    fclose( fp );
-   
-   ini_reader_error_code err;
-   ini_reader_data ini = NULL;
-   err = ini_reader_parse( &ini, test_file_missing );
+
+   ini = ini_reader_parse( test_file_missing );
 
    test_int( __LINE__
            , "parse non-existent file, error code"
-           , (int)err
+           , (int)ini_reader_get_last_error_code( ini )
            , (int)E_INI_READER_FILE_NOT_FOUND );
 
-   ini_reader_free( &ini );
+   ini_reader_free( ini );
 
-   test_pointer( __LINE__
-               , "free data structure, data pointer"
-               , (void*)ini
-               , (void*)NULL );
-
-   err = ini_reader_parse( &ini, test_file );
+   ini = ini_reader_parse( test_file );
 
    test_int( __LINE__
            , "parse file, error code"
-           , (int)err
+           , (int)ini_reader_get_last_error_code( ini )
            , (int)E_INI_READER_SUCCESS );
 
-   if( err != E_INI_READER_SUCCESS ){
-      // TODO: print detailed error
+   if( ini_reader_get_last_error_code(ini) != E_INI_READER_SUCCESS ){
       fprintf( stderr, "Error parsing configuration file: %s\n", ini_reader_get_last_error_details(ini) );
       exit( EXIT_FAILURE );
    }
@@ -244,16 +238,16 @@ int main( void ){
               , ini_reader_get_string( ini, "whitespace", "empty string", "aaa" )
               , "" );
 
-   ini_reader_free( &ini );
+   ini_reader_free( ini );
 
-   err = ini_reader_parse( &ini, test_file_repeat );
+   ini = ini_reader_parse( test_file_repeat );
 
    test_int( __LINE__
            , "parse file, duplicate sections"
-           , (int)err
+           , (int)ini_reader_get_last_error_code( ini )
            , (int)E_INI_READER_DUPLICATE_SECTION );
 
-   ini_reader_free( &ini );
+   ini_reader_free( ini );
 
    return 0;
 }

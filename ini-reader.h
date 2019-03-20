@@ -17,8 +17,7 @@ typedef enum _ini_reader_error_code ini_reader_error_code;
 typedef struct _ini_reader_data * ini_reader_data;
 
 // parse configuration file
-ini_reader_error_code ini_reader_parse( ini_reader_data *ini_data
-                                      , const char      *filename );
+ini_reader_data ini_reader_parse( const char *filename );
 
 // getters for config data
 const char *ini_reader_get_string( ini_reader_data    ini_data
@@ -35,7 +34,7 @@ double ini_reader_get_double( ini_reader_data   ini_data
                             , double            default_value );
 
 // bookkeeping
-void ini_reader_free( ini_reader_data *ini_data );
+void ini_reader_free( ini_reader_data ini_data );
 
 // error handling
 const char *ini_reader_get_error_description( ini_reader_error_code error_code );

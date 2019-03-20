@@ -184,9 +184,8 @@ t_ini_reader_property get_property
    return p;
 }
 
-ini_reader_error_code ini_reader_parse
-   ( ini_reader_data   *ini_data
-   , const char        *filename
+ini_reader_data ini_reader_parse
+   ( const char *filename
 ){
    FILE *fp;
    char line[INI_READER_STRLEN];
@@ -199,7 +198,6 @@ ini_reader_error_code ini_reader_parse
 
    /// Initialize data structures
    data = (ini_reader_data)malloc( sizeof(*data) );
-   *ini_data = data;
    set_last_error( data, E_INI_READER_SUCCESS, "" );
 
    data->head_section = new_section( "" );;
@@ -210,7 +208,7 @@ ini_reader_error_code ini_reader_parse
    if( fp == NULL ){
       snprintf( error_message, INI_READER_STRLEN, "failed to open: %s", filename );
       set_last_error( data, E_INI_READER_FILE_NOT_FOUND, error_message );
-      return data->last_error_code;
+      return data;
    }
 
    /// Parse the config file
@@ -231,7 +229,7 @@ ini_reader_error_code ini_reader_parse
          if( get_section( data, name ) ){
             snprintf( error_message, INI_READER_STRLEN, "%s, line %d: Duplicate section defined.", filename, line_number );
             set_last_error( data, E_INI_READER_DUPLICATE_SECTION, error_message );
-            return data->last_error_code;
+            return data;
          }
 
          // add new section, set as current
@@ -250,7 +248,7 @@ ini_reader_error_code ini_reader_parse
          if( !eq ){
             snprintf( error_message, INI_READER_STRLEN, "%s, line %d: Not a 'key = value' expression.", filename, line_number );
             set_last_error( data, E_INI_READER_PARSE_FAIL, error_message );
-            return data->last_error_code;
+            return data;
          }
 
          // extract key
@@ -266,21 +264,19 @@ ini_reader_error_code ini_reader_parse
          if( get_property( current_section, key ) ){
             sprintf( error_message, "%s, line %d: Duplicate property key defined.", filename, line_number );
             set_last_error( data, E_INI_READER_DUPLICATE_PROPERTY, error_message );
-            return data->last_error_code;
+            return data;
          }
 
          // add new property
          add_property( current_section, new_property( key, value ) );
       }
    }
-  
-   *ini_data = data;
 
-   return data->last_error_code;
+   return data;
 }
 
 void ini_reader_free
-  ( ini_reader_data *ini_data
+  ( ini_reader_data ini_data
 ){
   // TODO
 }
